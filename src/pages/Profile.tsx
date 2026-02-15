@@ -10,31 +10,17 @@ export default function Profile() {
   const { user } = useAuth();
   const { t } = useI18n();
 
-  const { data: profile, isLoading: profileLoading } = useQuery({
+  const { data: profile, isLoading } = useQuery({
     queryKey: ['profile', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', user.id)
+        .eq('user_id', user.id)
         .single();
       if (error) throw error;
       return data;
-    },
-    enabled: !!user?.id,
-  });
-
-  const { data: roles, isLoading: rolesLoading } = useQuery({
-    queryKey: ['user_roles', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return [];
-      const { data, error } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', user.id);
-      if (error) throw error;
-      return data?.map((r: any) => r.role) ?? [];
     },
     enabled: !!user?.id,
   });
@@ -53,8 +39,6 @@ export default function Profile() {
     },
     enabled: !!profile?.department_id,
   });
-
-  const isLoading = profileLoading || rolesLoading;
 
   const roleLabels: Record<string, string> = t.roles;
 
@@ -85,9 +69,13 @@ export default function Profile() {
                 <p className="font-medium">{profile?.full_name || '—'}</p>
               </div>
               <div>
+                <p className="text-sm text-muted-foreground">User ID</p>
+                <p className="font-medium text-xs" dir="ltr">{user?.id || '—'}</p>
+              </div>
+              <div>
                 <p className="text-sm text-muted-foreground">{t.profile?.status ?? 'الحالة'}</p>
                 <Badge variant={profile?.is_active ? 'default' : 'destructive'}>
-                  {profile?.is_active ? (t.status.active) : (t.profile?.inactive ?? 'موقوف')}
+                  {profile?.is_active ? t.status.active : (t.profile?.inactive ?? 'موقوف')}
                 </Badge>
               </div>
             </CardContent>
@@ -102,18 +90,10 @@ export default function Profile() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <p className="text-sm text-muted-foreground">{t.profile?.roles ?? 'الأدوار'}</p>
-                <div className="flex flex-wrap gap-2 mt-1">
-                  {roles && roles.length > 0 ? (
-                    roles.map((role: string) => (
-                      <Badge key={role} variant="secondary">
-                        {roleLabels[role] || role}
-                      </Badge>
-                    ))
-                  ) : (
-                    <span className="text-muted-foreground">—</span>
-                  )}
-                </div>
+                <p className="text-sm text-muted-foreground">{t.profile?.roles ?? 'الدور'}</p>
+                <Badge variant="secondary">
+                  {roleLabels[profile?.role_code] || profile?.role_code || '—'}
+                </Badge>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground flex items-center gap-1">
