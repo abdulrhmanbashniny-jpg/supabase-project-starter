@@ -12,16 +12,78 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+async function bootstrapProfile(user: User) {
+  try {
+    // Check if profile exists
+    const { data: existing } = await supabase
+      .from('profiles')
+      .select('user_id')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (existing) return; // profile already exists
+
+    // Check if bootstrap admin is already set
+    const { data: settings } = await supabase
+      .from('system_settings')
+      .select('id, bootstrap_admin_user_id')
+      .limit(1)
+      .maybeSingle();
+
+    const isFirstUser = !settings?.bootstrap_admin_user_id;
+    const roleCode = isFirstUser ? 'system_admin' : 'employee';
+
+    // Find HR department for first user
+    let departmentId = null;
+    if (isFirstUser) {
+      const { data: hrDept } = await supabase
+        .from('departments')
+        .select('id')
+        .ilike('name_en', '%human%')
+        .limit(1)
+        .maybeSingle();
+      departmentId = hrDept?.id ?? null;
+    }
+
+    const fullName = user.user_metadata?.full_name || user.email?.split('@')[0] || '';
+
+    // Create profile
+    await supabase.from('profiles').insert({
+      user_id: user.id,
+      email: user.email,
+      full_name: fullName,
+      role_code: roleCode,
+      department_id: departmentId,
+      is_active: true,
+    });
+
+    // Set bootstrap admin
+    if (isFirstUser && settings) {
+      await supabase
+        .from('system_settings')
+        .update({ bootstrap_admin_user_id: user.id })
+        .eq('id', settings.id ?? 1);
+    }
+  } catch (err) {
+    console.error('Bootstrap profile error:', err);
+  }
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+
+      if (session?.user) {
+        // Run bootstrap in background — don't block auth
+        setTimeout(() => bootstrapProfile(session.user), 0);
+      }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
