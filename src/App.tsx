@@ -12,6 +12,7 @@ import Dashboard from "@/pages/Dashboard";
 import Items from "@/pages/Items";
 import Reports from "@/pages/Reports";
 import SettingsPage from "@/pages/Settings";
+import Profile from "@/pages/Profile";
 import Integrations from "@/pages/Integrations";
 import AuditLog from "@/pages/AuditLog";
 import NotFound from "./pages/NotFound";
@@ -55,6 +56,7 @@ function AppRoutes() {
         <Route path="/items" element={<Items />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/me" element={<Profile />} />
         <Route path="/integrations" element={<Integrations />} />
         <Route path="/audit-log" element={<AuditLog />} />
       </Route>

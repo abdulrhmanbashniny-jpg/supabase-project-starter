@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button';
 import {
   LayoutDashboard,
   ClipboardList,
+  UserCircle,
   BarChart3,
   Settings,
   Plug,
@@ -35,6 +36,7 @@ const navItems = [
   { key: 'dashboard', icon: LayoutDashboard, path: '/' },
   { key: 'items', icon: ClipboardList, path: '/items' },
   { key: 'reports', icon: BarChart3, path: '/reports' },
+  { key: 'profile', icon: UserCircle, path: '/me' },
   { key: 'settings', icon: Settings, path: '/settings' },
   { key: 'integrations', icon: Plug, path: '/integrations' },
   { key: 'auditLog', icon: FileText, path: '/audit-log' },

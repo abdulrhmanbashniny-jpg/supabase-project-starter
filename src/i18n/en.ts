@@ -11,6 +11,7 @@ export const en = {
     settings: 'Settings',
     integrations: 'Integrations',
     auditLog: 'Audit Log',
+    profile: 'My Profile',
     logout: 'Logout',
   },
   departments: {
@@ -104,6 +105,15 @@ export const en = {
     webhookUrl: 'Webhook URL',
     test: 'Test',
     save: 'Save',
+  },
+  profile: {
+    title: 'My Profile',
+    info: 'User Info',
+    fullName: 'Full Name',
+    status: 'Status',
+    inactive: 'Inactive',
+    roleAndDept: 'Role & Department',
+    roles: 'Roles',
   },
   auth: {
     login: 'Login',
