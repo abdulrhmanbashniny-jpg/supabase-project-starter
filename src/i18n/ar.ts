@@ -11,6 +11,7 @@ export const ar = {
     settings: 'الإعدادات',
     integrations: 'التكاملات',
     auditLog: 'سجل التدقيق',
+    profile: 'ملفي',
     logout: 'تسجيل الخروج',
   },
   departments: {
@@ -104,6 +105,15 @@ export const ar = {
     webhookUrl: 'رابط Webhook',
     test: 'اختبار',
     save: 'حفظ',
+  },
+  profile: {
+    title: 'ملفي الشخصي',
+    info: 'معلومات المستخدم',
+    fullName: 'الاسم الكامل',
+    status: 'الحالة',
+    inactive: 'موقوف',
+    roleAndDept: 'الدور والقسم',
+    roles: 'الأدوار',
   },
   auth: {
     login: 'تسجيل الدخول',
